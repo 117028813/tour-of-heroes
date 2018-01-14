@@ -1,22 +1,26 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-let HEROES = [
-  { id: 11, name: 'Mr. Nice' },
-  { id: 12, name: 'Narco' },
-  { id: 13, name: 'Bombasto' },
-  { id: 14, name: 'Celeritas' },
-  { id: 15, name: 'Magneta' },
-  { id: 16, name: 'RubberMan' },
-  { id: 17, name: 'Dynama' },
-  { id: 18, name: 'Dr IQ' },
-  { id: 19, name: 'Magma' },
-  { id: 20, name: 'Tornado' }
-];
+// let HEROES = [
+//   { id: 11, name: 'Mr. Nice' },
+//   { id: 12, name: 'Narco' },
+//   { id: 13, name: 'Bombasto' },
+//   { id: 14, name: 'Celeritas' },
+//   { id: 15, name: 'Magneta' },
+//   { id: 16, name: 'RubberMan' },
+//   { id: 17, name: 'Dynama' },
+//   { id: 18, name: 'Dr IQ' },
+//   { id: 19, name: 'Magma' },
+//   { id: 20, name: 'Tornado' }
+// ];
+
+let HEROES = fs.readFileSync('./data.json', 'utf8');
+HEROES = JSON.parse(HEROES);
 
 app.get('/heroes', (req, res) => {
   res.set({
@@ -62,6 +66,7 @@ app.post('/updateHeroes', (req, res) => {
           HEROES[i].name = jsonStr.name;
         }
       }
+      fs.writeFileSync('./data.json', JSON.stringify(HEROES));
       res.send(true);
     })
   }
@@ -81,6 +86,7 @@ app.post('/addHero', (req, res) => {
       name: body.name
     }
     HEROES.push(hero);
+    fs.writeFileSync('./data.json', JSON.stringify(HEROES));
     res.send(hero);
   })
 })
@@ -97,6 +103,7 @@ app.post('/deleteHero', (req, res) => {
         return;
       }
     })
+    fs.writeFileSync('./data.json', JSON.stringify(HEROES));
     res.send(body);
   })
 })
